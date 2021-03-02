@@ -1,39 +1,31 @@
 import React from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Container, Typography, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Coins from './components/Coins';
+
+const queryClient = new QueryClient();
+
+const useStyles = makeStyles((theme) => ({
+  heading: {
+    padding: '3rem 1rem',
+    fontSize: '35px',
+    letterSpacing: '2px'
+  },
+}));
 
 const App = () => {
-  const [loading, setLoading] = React.useState(true);
-  const [coins, setCoins] = React.useState([]);
-
-  React.useEffect(() => {
-    getCoins();
-  }, []);
-
-  function getCoins() {
-    return fetch(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false'
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setLoading(false);
-        setCoins(data);
-      })
-      .catch((error) => {
-        setLoading(false);
-        throw error;
-      });
-  }
-
-  return loading ? (
-    <div>Loading...</div>
-  ) : (
-    <div className='app'>
-      <h1>Cryptocurrency Tracker</h1>
-      {coins.length ? (
-        coins.map((coin) => <h4 key={coin.symbol}>{coin.name}</h4>)
-      ) : (
-        <p>Coins not found...!</p>
-      )}
-    </div>
+  const classes = useStyles()
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Container maxWidth='lg'>
+        <Grid container justify='center' className='py-4'>
+          <Typography variant='h4' className={classes.heading}>Cryptocurrency Tracker</Typography>
+        </Grid>
+        <Coins />
+      </Container>
+    </QueryClientProvider>
   );
 };
 
